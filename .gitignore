@@ -1,0 +1,15 @@
+# 遊戲本體原始碼——本機保留、絕不推公開 repo（避免被偷；正式版走 App Store）
+index.game.html
+README.internal.md
+bgm.mp3
+sample.pdf
+sample_preview.png
+backend/
+versus/
+
+# 內部文件（本來就未追蹤）
+STATUS_FROM_TASKS.md
+APP_MONETIZATION_AND_BACKEND_ANALYSIS_20260613.md
+steam-vs-appstore.md
+.agents/
+.codex/

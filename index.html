@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>數字獵人 Number Hunter</title>
+<meta name="description" content="數字獵人 — 在滿版隨機格子紙上最快找出指定數字的反應遊戲。App Store 免費下載。">
+<link rel="icon" href="icon-180.png?v99">
+<link rel="apple-touch-icon" href="icon-180.png?v99">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px 22px calc(28px + env(safe-area-inset-bottom));
+    background: radial-gradient(120% 120% at 50% 0%, #fef8e7 0%, #f6ecd0 60%, #ecdcae 100%);
+    color: #1f2937;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    -webkit-user-select: none; user-select: none;
+  }
+  .card {
+    max-width: 380px; width: 100%;
+    background: #fdfaf3; border: 3px solid #1f2937; border-radius: 22px;
+    box-shadow: 0 14px 44px rgba(0,0,0,.22);
+    padding: 34px 26px; text-align: center;
+  }
+  .logo {
+    width: 104px; height: 104px; border-radius: 24px; display: block; margin: 0 auto 18px;
+    box-shadow: 0 6px 0 #d8c48c; border: 2px solid #1f2937;
+  }
+  h1 { font-size: 27px; font-weight: 900; margin: 0 0 4px; letter-spacing: 1px; }
+  .sub { font-size: 15px; color: #6b5a2e; font-weight: 700; margin: 0 0 20px; }
+  .desc { font-size: 15px; line-height: 1.7; color: #374151; margin: 0 0 26px; }
+  .store {
+    display: block; width: 100%; padding: 16px; text-decoration: none;
+    font-size: 18px; font-weight: 900; border-radius: 14px;
+    background: #f59e0b; color: #1f2937; border: none;
+    box-shadow: 0 5px 0 #7a4a12; margin-bottom: 12px;
+  }
+  .store:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a4a12; }
+  .note { font-size: 13px; color: #9a8a5f; margin-top: 18px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="icon-180.png?v99" alt="數字獵人">
+    <h1>數字獵人</h1>
+    <p class="sub">Number Hunter</p>
+    <p class="desc">在滿版的隨機格子紙上，<br>用最快的速度找出指定數字。<br>簡單好上手，越快排名越前！</p>
+    <a class="store" id="storeBtn" href="https://apps.apple.com/app/id6781130130">📲 App Store 免費下載</a>
+    <p class="note">請至 App Store 下載「數字獵人」即可遊玩。<br>手機、平板皆支援，含單機挑戰與連線對戰。</p>
+  </main>
+
+<script>
+// ===== 分享邀請連結導引進 App（保留原 ?room= 對戰邀請流程）=====
+// 房主用「快速分享／LINE／複製連結」送出的邀請連結帶 ?room=1234。
+//  ・iOS 網頁：先用自訂 scheme numberhunter://room=房號 喚起已安裝的 App 直接加入；
+//    未安裝（喚起逾時、頁面仍在前景）→ 自動導 App Store 安裝，並顯示落地卡片供手動選擇。
+//  ・非 iOS / in-app 瀏覽器：導 App Store。
+var APPSTORE_URL = 'https://apps.apple.com/app/id6781130130';   // 數字獵人 App Store（app id 6781130130）
+var APP_SCHEME_BASE = 'numberhunter://room=';                  // 原生殼註冊的自訂 URL scheme（Info.plist CFBundleURLTypes）
+
+function launchAppOrStore(code) {
+  var left = false;
+  var markLeft = function () { left = true; };
+  document.addEventListener('visibilitychange', function () { if (document.hidden) left = true; });
+  window.addEventListener('pagehide', markLeft);
+  window.addEventListener('blur', markLeft);
+  var t0 = Date.now();
+  try { location.href = APP_SCHEME_BASE + code; } catch (e) { }
+  setTimeout(function () {
+    if (!left && Date.now() - t0 < 3000) { try { location.href = APPSTORE_URL; } catch (e) { } }
+  }, 1600);
+}
+
+function showJoinLanding(code) {
+  var L = function (zh, en) { return (navigator.language || '').toLowerCase().indexOf('zh') === 0 ? zh : en; };
+  var ov = document.createElement('div');
+  ov.id = 'joinLanding';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;' +
+    'background:#6b7280;padding:24px;box-sizing:border-box;font-family:inherit;';
+  ov.innerHTML =
+    '<div style="max-width:340px;width:100%;background:#fdfaf3;border:3px solid #1f2937;border-radius:18px;' +
+    'box-shadow:0 12px 40px rgba(0,0,0,.35);padding:26px 22px;text-align:center;">' +
+    '<div style="font-size:44px;line-height:1;margin-bottom:10px;">🎯</div>' +
+    '<div style="font-size:20px;font-weight:900;color:#111827;">' + L('加入連線對戰', 'Join Versus') + '</div>' +
+    '<div style="font-size:14px;color:#374151;margin:6px 0 4px;">' + L('房號', 'Room') + '</div>' +
+    '<div style="font-size:40px;font-weight:900;letter-spacing:8px;color:#b45309;margin-bottom:16px;">' + code + '</div>' +
+    '<button id="jlOpen" style="width:100%;padding:14px;font-size:16px;font-weight:800;border:none;border-radius:12px;' +
+    'background:#f59e0b;color:#1f2937;margin-bottom:10px;">' + L('📲 開啟 App 加入', '📲 Open in App') + '</button>' +
+    '<button id="jlStore" style="width:100%;padding:12px;font-size:15px;font-weight:700;border:2px solid #1f2937;' +
+    'border-radius:12px;background:#fff;color:#1f2937;">' + L('⬇️ 安裝 App', '⬇️ Install App') + '</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  document.getElementById('jlOpen').onclick = function () { launchAppOrStore(code); };
+  document.getElementById('jlStore').onclick = function () { try { location.href = APPSTORE_URL; } catch (e) { } };
+  setTimeout(function () { launchAppOrStore(code); }, 500);
+}
+
+(function handleShareLink() {
+  try {
+    var code = ((new URLSearchParams(location.search).get('room')) || '').replace(/\D/g, '').slice(0, 4);
+    if (code.length !== 4) return;
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { }
+    var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS) { showJoinLanding(code); }
+    else { try { location.href = APPSTORE_URL; } catch (e) { } }
+  } catch (e) { }
+})();
+</script>
+</body>
+</html>
