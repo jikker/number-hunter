@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <title>數字獵人 Number Hunter</title>
-<meta name="description" content="數字獵人 — 在滿版隨機格子紙上最快找出指定數字的反應遊戲。App Store 免費下載。">
+<meta name="description" content="數字獵人 — 在滿版隨機格子紙上最快找出指定數字的反應遊戲。App Store、Google Play 免費下載。">
 <link rel="icon" href="icon-180.png?v99">
 <link rel="apple-touch-icon" href="icon-180.png?v99">
 <style>
@@ -40,6 +40,8 @@
     box-shadow: 0 5px 0 #7a4a12; margin-bottom: 12px;
   }
   .store:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a4a12; }
+  .store.play { background: #34a853; color: #fff; box-shadow: 0 5px 0 #1d6b31; }
+  .store.play:active { box-shadow: 0 2px 0 #1d6b31; }
   .note { font-size: 13px; color: #9a8a5f; margin-top: 18px; line-height: 1.6; }
 </style>
 </head>
@@ -50,7 +52,8 @@
     <p class="sub">Number Hunter</p>
     <p class="desc">在滿版的隨機格子紙上，<br>用最快的速度找出指定數字。<br>簡單好上手，越快排名越前！</p>
     <a class="store" id="storeBtn" href="https://apps.apple.com/app/id6781130130">📲 App Store 免費下載</a>
-    <p class="note">請至 App Store 下載「數字獵人」即可遊玩。<br>手機、平板皆支援，含單機挑戰與連線對戰。</p>
+    <a class="store play" id="playBtn" href="https://play.google.com/store/apps/details?id=com.jikker.numberhunter">🤖 Google Play 免費下載</a>
+    <p class="note">請至 App Store 或 Google Play 下載「數字獵人」即可遊玩。<br>手機、平板皆支援，含單機挑戰與連線對戰。</p>
   </main>
 
 <script>
@@ -58,9 +61,13 @@
 // 房主用「快速分享／LINE／複製連結」送出的邀請連結帶 ?room=1234。
 //  ・iOS 網頁：先用自訂 scheme numberhunter://room=房號 喚起已安裝的 App 直接加入；
 //    未安裝（喚起逾時、頁面仍在前景）→ 自動導 App Store 安裝，並顯示落地卡片供手動選擇。
-//  ・非 iOS / in-app 瀏覽器：導 App Store。
+//  ・Android / 其他 / in-app 瀏覽器：依平台導對應商店（Android → Google Play，其餘 → App Store）。
 var APPSTORE_URL = 'https://apps.apple.com/app/id6781130130';   // 數字獵人 App Store（app id 6781130130）
+var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.jikker.numberhunter';  // 數字獵人 Google Play
 var APP_SCHEME_BASE = 'numberhunter://room=';                  // 原生殼註冊的自訂 URL scheme（Info.plist CFBundleURLTypes）
+
+function isAndroid() { return /Android/i.test(navigator.userAgent); }
+function storeUrl() { return isAndroid() ? PLAY_URL : APPSTORE_URL; }
 
 function launchAppOrStore(code) {
   var left = false;
@@ -71,7 +78,7 @@ function launchAppOrStore(code) {
   var t0 = Date.now();
   try { location.href = APP_SCHEME_BASE + code; } catch (e) { }
   setTimeout(function () {
-    if (!left && Date.now() - t0 < 3000) { try { location.href = APPSTORE_URL; } catch (e) { } }
+    if (!left && Date.now() - t0 < 3000) { try { location.href = storeUrl(); } catch (e) { } }
   }, 1600);
 }
 
@@ -95,7 +102,7 @@ function showJoinLanding(code) {
     '</div>';
   document.body.appendChild(ov);
   document.getElementById('jlOpen').onclick = function () { launchAppOrStore(code); };
-  document.getElementById('jlStore').onclick = function () { try { location.href = APPSTORE_URL; } catch (e) { } };
+  document.getElementById('jlStore').onclick = function () { try { location.href = storeUrl(); } catch (e) { } };
   setTimeout(function () { launchAppOrStore(code); }, 500);
 }
 
@@ -107,7 +114,7 @@ function showJoinLanding(code) {
     var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     if (isIOS) { showJoinLanding(code); }
-    else { try { location.href = APPSTORE_URL; } catch (e) { } }
+    else { try { location.href = storeUrl(); } catch (e) { } }
   } catch (e) { }
 })();
 </script>
